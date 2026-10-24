@@ -30,7 +30,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/api/transactions", async (ApplicationDbContext context) =>
-    await context.Transactions.ToListAsync());
+{
+    var transactions = await context.Transactions.ToListAsync();
+    return Results.Ok(transactions);
+});
 
 app.MapPost("/api/import", async (ApplicationDbContext context, Transaction transaction) =>
 {
