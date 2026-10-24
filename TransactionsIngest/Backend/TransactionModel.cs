@@ -1,10 +1,10 @@
 public class Transaction
 {
-    public string SourceSystem { get; set; } = string.Empty;
-    public int TransactionId { get; set; }
-    public string CardNumber { get; set; } = string.Empty;
-    public string LocationCode { get; set; } = string.Empty;
-    public string ProductName { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
-    public DateTime TransactionTime { get; set; }
+    public string sourceSystem { get; set; } = string.Empty;
+    public int transactionId { get; set; }
+    public string cardNumber { get; set; } = string.Empty;
+    public string locationCode { get; set; } = string.Empty;
+    public string productName { get; set; } = string.Empty;
+    public decimal amount { get; set; }
+    public string transactionTime { get; set; } = string.Empty;
 }

@@ -1,0 +1,26 @@
+<div class="form-container">
+  <h3>Add New Transaction</h3>
+  <br>
+  <label for="name">Source System:</label>
+  <input type="text" id="source_system" #sourceSystemName placeholder="e.g. Online">
+  <br>
+  <label for="id">Transaction ID:</label>
+  <input type="number" id="transaction_id" #transactionId placeholder=1000>
+  <br>
+  <label for="cc number">Credit Card Number:</label>
+  <input type="text" id="name" #cardNumber placeholder="e.g. 1234 5678 9101 1121">
+  <br>
+  <label for="location">Location:</label>
+  <input type="text" id="locationCode" #locationCode placeholder="e.g. ONLINE">
+  <br>
+  <label for="product">Product:</label>
+  <input type="text" id="product_name" #productName placeholder="e.g. Wireless Mouse">
+  <br>
+  <label for="price">Price ($):</label>
+  <input type="number" id="price" #transactionPrice placeholder="0.00">
+  <br>
+  <!-- Clicking this triggers the onSubmit method in your TypeScript file -->
+  <button (click)="onSubmitTransaction(sourceSystemName.value, transactionId.valueAsNumber, cardNumber.value, locationCode.value, productName.value, transactionPrice.valueAsNumber)">
+    Post Transaction
+  </button>
+</div>
