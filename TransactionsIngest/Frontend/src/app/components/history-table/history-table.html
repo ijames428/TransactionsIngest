@@ -9,18 +9,27 @@
                     <th>Transaction ID</th>
                     <th>Updated Field</th>
                     <th>Updated String</th>
+                    <th>Previous String</th>
                     <th>Updated Decimal</th>
+                    <th>Previous Decimal</th>
                     <th>Update Time</th>
                 </tr>
             </thead>
             <tbody>
-                @for (history_entry of async_history_entries; track history_entry.sourceSystem) {
+                @for (history_entry of async_history_entries; track history_entry.entryId) {
                     <tr>
                         <td>{{ history_entry.sourceSystem }}</td>
                         <td>{{ history_entry.transactionId }}</td>
                         <td>{{ history_entry.updatedField }}</td>
-                        <td>{{ history_entry.updatedString }}</td>
-                        <td>{{ history_entry.updatedDecimal }}</td>
+                        <td>{{ history_entry.newString }}</td>
+                        <td>{{ history_entry.oldString }}</td>
+                        @if (history_entry.newDecimal == 0.0 && history_entry.oldDecimal == 0.0) {
+                            <td></td>
+                            <td></td>
+                        } @else {
+                            <td>{{ history_entry.newDecimal }}</td>
+                            <td>{{ history_entry.oldDecimal }}</td>
+                        }
                         <td>{{ history_entry.updateTime }}</td>
                     </tr>
                 } @empty {

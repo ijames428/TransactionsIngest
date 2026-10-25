@@ -16,6 +16,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Transaction>()
             .HasKey(t => new { t.sourceSystem, t.transactionId });
         modelBuilder.Entity<HistoryEntry>()
-            .HasKey(t => new { t.sourceSystem, t.transactionId });
+            .HasKey(t => new { t.entryId });
     }
 }

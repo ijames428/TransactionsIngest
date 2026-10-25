@@ -64,9 +64,7 @@ export class TransactionFormComponent
       return;
     }
 
-    console.log(test_index)
     const test_data: any[] = this.TestDatas[test_index];
-    const now: Date = new Date();
     
     const newTestTransaction: Transaction = {
       sourceSystem: test_data[0],
@@ -100,8 +98,6 @@ export class TransactionFormComponent
     this.transactionService.resetDatabases().subscribe({
       next: (response) => {
         this.transactionService.triggerUpdate();
-        // Proactively clear your local data state or reload the page here
-        // e.g., this.myTableData$.next([]);
       },
       error: (err) => {
         console.error('Failed to clear database', err);

@@ -3,8 +3,9 @@ CREATE TABLE IF NOT EXISTS History (
     sourceSystem TEXT NOT NULL,
     transactionId INTEGER,
     updatedField TEXT NOT NULL,
-    updatedString TEXT NOT NULL,
-    updatedDecimal REAL,
-    updateTime TEXT NOT NULL,
-    FOREIGN KEY (sourceSystem, transactionId) REFERENCES Transactions(sourceSystem, transactionId)
+    newString TEXT NOT NULL,
+    oldString TEXT NOT NULL,
+    newDecimal REAL,
+    oldDecimal REAL,
+    updateTime TEXT NOT NULL
 );

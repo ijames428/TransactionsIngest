@@ -16,11 +16,14 @@ export interface Transaction
 
 export interface HistoryEntry
 {
+  entryId: number;
   sourceSystem: string;
   transactionId: number;
   updatedField: string;
-  updatedString: string;
-  updatedDecimal: number;
+  newString: string;
+  oldString: string;
+  newDecimal: number;
+  oldDecimal: number;
   updateTime: string;
 }
 
