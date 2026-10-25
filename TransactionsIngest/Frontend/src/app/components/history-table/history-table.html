@@ -1,0 +1,36 @@
+<div class="table-container">
+    <h2>History</h2>
+
+    @if (history_entries$ | async; as async_history_entries) {
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Source System</th>
+                    <th>Transaction ID</th>
+                    <th>Updated Field</th>
+                    <th>Updated String</th>
+                    <th>Updated Decimal</th>
+                    <th>Update Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (history_entry of async_history_entries; track history_entry.sourceSystem) {
+                    <tr>
+                        <td>{{ history_entry.sourceSystem }}</td>
+                        <td>{{ history_entry.transactionId }}</td>
+                        <td>{{ history_entry.updatedField }}</td>
+                        <td>{{ history_entry.updatedString }}</td>
+                        <td>{{ history_entry.updatedDecimal }}</td>
+                        <td>{{ history_entry.updateTime }}</td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td colspan="8" class="no-data">No data records found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <div class="spinner">Loading backend data...</div>
+    }
+</div>

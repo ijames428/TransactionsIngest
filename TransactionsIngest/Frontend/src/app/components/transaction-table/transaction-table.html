@@ -12,6 +12,7 @@
                     <th>Product Name</th>
                     <th>Amount</th>
                     <th>Transaction Time</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,10 +25,11 @@
                     <td>{{ transaction.productName }}</td>
                     <td>{{ transaction.amount }}</td>
                     <td>{{ transaction.transactionTime }}</td>
+                    <td>{{ transaction.transactionStatus }}</td>
                     </tr>
                 } @empty {
                     <tr>
-                    <td colspan="7" class="no-data">No data records found.</td>
+                    <td colspan="8" class="no-data">No data records found.</td>
                     </tr>
                 }
             </tbody>

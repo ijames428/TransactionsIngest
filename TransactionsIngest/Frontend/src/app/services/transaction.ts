@@ -11,6 +11,17 @@ export interface Transaction
   productName: string;
   amount: number;
   transactionTime: string;
+  transactionStatus: string;
+}
+
+export interface HistoryEntry
+{
+  sourceSystem: string;
+  transactionId: number;
+  updatedField: string;
+  updatedString: string;
+  updatedDecimal: number;
+  updateTime: string;
 }
 
 @Injectable({
@@ -21,6 +32,8 @@ export class TransactionService {
     private apiUrl = 'https://localhost:7037/api/';
     private apiImportExtension = 'import';
     private apiTransactionsExtension = 'transactions';
+    private apiHistoryExtension = 'history';
+    private apiReset = 'reset';
 
     private dataStream$ = new Subject<any>();
     public currentData$ = this.dataStream$.asObservable();
@@ -38,8 +51,20 @@ export class TransactionService {
     getTransactions(): Observable<Transaction[]> {
         return this.http.get<Transaction[]>(this.apiUrl + this.apiTransactionsExtension);
     }
+    
+    getHistory(): Observable<HistoryEntry[]> {
+        return this.http.get<HistoryEntry[]>(this.apiUrl + this.apiHistoryExtension);
+    }
 
-    public triggerUpdate(savedTransaction: Transaction) {
+    public triggerUpdateWithTransaction(savedTransaction: Transaction) {
         this.dataStream$.next(savedTransaction); // Emits the data to all subscribers
+    }
+
+    public triggerUpdate() {
+        this.dataStream$.next(null); // Emits the data to all subscribers
+    }
+    
+    resetDatabases(): Observable<any> {
+        return this.http.post<Transaction>(this.apiUrl + this.apiReset, {});
     }
 }

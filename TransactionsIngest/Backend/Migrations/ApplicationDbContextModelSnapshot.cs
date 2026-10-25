@@ -41,6 +41,10 @@ namespace TransactionsIngestorApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TransactionHistory")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("TransactionTime")
                         .HasColumnType("TEXT");
 

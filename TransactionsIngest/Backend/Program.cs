@@ -29,17 +29,32 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapPost("/api/import", async (ApplicationDbContext context, Transaction transaction) =>
+{
+    context.Transactions.Add(transaction);
+    await context.SaveChangesAsync();
+    return Results.Created($"/products/{transaction.transactionId}", transaction);
+});
+
 app.MapGet("/api/transactions", async (ApplicationDbContext context) =>
 {
     var transactions = await context.Transactions.ToListAsync();
     return Results.Ok(transactions);
 });
 
-app.MapPost("/api/import", async (ApplicationDbContext context, Transaction transaction) =>
+app.MapGet("/api/history", async (ApplicationDbContext context) =>
 {
-    context.Transactions.Add(transaction);
+    var history_entries = await context.History.ToListAsync();
+    return Results.Ok(history_entries);
+});
+
+app.MapPost("/api/reset", async (ApplicationDbContext context, Transaction transaction) =>
+{
+    Console.WriteLine("Reset");
+    await context.Transactions.ExecuteDeleteAsync();
+    await context.History.ExecuteDeleteAsync();
     await context.SaveChangesAsync();
-    return Results.Created($"/products/{transaction.transactionId}", transaction);
+    return Results.Ok("reset");
 });
 
 app.Run();

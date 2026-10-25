@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { TransactionService, Transaction } from '../../services/transaction';
+import { TransactionService } from '../../services/transaction';
 import { switchMap, Subscription, BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -14,7 +14,6 @@ import { switchMap, Subscription, BehaviorSubject } from 'rxjs';
 export class TransactionTableComponent implements OnInit
 {
     private refresh$ = new BehaviorSubject<void>(undefined);
-    // transactions$!: Observable<Transaction[]>;
     private sub!: Subscription;
     
     transactions$ = this.refresh$.pipe(
@@ -24,14 +23,14 @@ export class TransactionTableComponent implements OnInit
     constructor(private transactionService: TransactionService) {}
 
     ngOnInit(): void {
-        this.fetchTableData();
+        this.fetchTransactionsTableData();
         
         this.sub! = this.transactionService.currentData$.subscribe(savedTransaction => {
-            this.fetchTableData();
+            this.fetchTransactionsTableData();
         });
     }
 
-    public fetchTableData(): void {
+    public fetchTransactionsTableData(): void {
         this.refresh$.next();
     }
 }

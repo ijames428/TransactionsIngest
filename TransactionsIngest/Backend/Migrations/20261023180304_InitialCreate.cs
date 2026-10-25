@@ -22,7 +22,8 @@ namespace TransactionsIngestorApi.Migrations
                     LocationCode = table.Column<string>(type: "TEXT", nullable: false),
                     ProductName = table.Column<string>(type: "TEXT", nullable: false),
                     Amount = table.Column<decimal>(type: "TEXT", nullable: false),
-                    TransactionTime = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    TransactionTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    transactionStatus = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

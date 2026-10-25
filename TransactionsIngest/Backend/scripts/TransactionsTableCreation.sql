@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS Transactions (
     productName TEXT NOT NULL,
     amount REAL,
     transactionTime TEXT NOT NULL,
+    transactionStatus TEXT NOT NULL,
     PRIMARY KEY (sourceSystem, transactionId)
 );
