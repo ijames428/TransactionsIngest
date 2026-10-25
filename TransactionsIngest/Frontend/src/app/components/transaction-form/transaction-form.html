@@ -1,28 +1,44 @@
 <div class="form-container">
   <h3>Add New Transaction</h3>
+  <div style="height: 24px;">
   <label for="name">Source System:</label>
-  <input type="text" id="source_system" #sourceSystemName placeholder="e.g. Online">
-  <br>
-  <label for="id">Transaction ID:</label>
-  <input type="number" id="transaction_id" #transactionId placeholder=1000>
-  <br>
-  <label for="cc number">Credit Card Number:</label>
-  <input type="text" id="name" #cardNumber placeholder="e.g. 1234 5678 9101 1121">
-  <br>
-  <label for="location">Location:</label>
-  <input type="text" id="locationCode" #locationCode placeholder="e.g. ONLINE">
-  <br>
-  <label for="product">Product:</label>
-  <input type="text" id="product_name" #productName placeholder="e.g. Wireless Mouse">
-  <br>
-  <label for="price">Price ($):</label>
-  <input type="number" id="price" #transactionPrice placeholder="0.00">
+    <select type="text" id="source_system" #sourceSystemName style="position: fixed; left: 250px;">
+      <option value="Store Uptown">Store Uptown</option>
+      <option value="Store Downtown">Store Downtown</option>
+      <option value="Online">Online</option>
+    </select>
+  </div>
+  <div style="height: 24px;">
+    <label for="id">Transaction ID:</label>
+    <input type="number" id="transaction_id" #transactionId placeholder=1000 style="position: absolute; left: 250px;">
+    <label id="id_error" [hidden]="!isIdErrorVisible" style="position: absolute; left: 450px; color: red;">Transaction ID is required.</label>
+  </div>
+  <div style="height: 24px;">
+    <label for="cc number">Credit Card Number:</label>
+    <input type="text" id="name" #cardNumber placeholder="e.g. 1234 5678 9101 1121" style="position: absolute; left: 250px;">
+    <label id="id_error" [hidden]="!isCardNumberErrorVisible" style="position: absolute; left: 450px; color: red;">Credit Card Number is required.</label>
+  </div>
+  <div style="height: 24px;">
+    <label for="product">Product:</label>
+    <input type="text" id="product_name" #productName placeholder="e.g. Wireless Mouse" style="position: absolute; left: 250px;">
+    <label id="id_error" [hidden]="!isProductNameErrorVisible" style="position: absolute; left: 450px; color: red;">Product Name is required.</label>
+  </div>
+  <div style="height: 24px;">
+    <label for="price">Price ($):</label>
+    <input type="number" id="price" #transactionPrice placeholder="0.00" style="position: absolute; left: 250px;">
+    <label id="id_error" [hidden]="!isPriceErrorVisible" style="position: absolute; left: 450px; color: red;">Price is required.</label>
+  </div>
   <br>
   <!-- Clicking this triggers the onSubmit method in your TypeScript file -->
-  <button (click)="onSubmitTransaction(sourceSystemName.value, transactionId.valueAsNumber, cardNumber.value, locationCode.value, productName.value, transactionPrice.valueAsNumber)">
+  <button (click)="onSubmitTransaction(sourceSystemName.value, transactionId.valueAsNumber, cardNumber.value, productName.value, transactionPrice.valueAsNumber)">
     Post Transaction
   </button>
   
+  <br>
+  <br>
+  <br>
+  <br>
+
   <button (click)="onRunTests()">
     Run Tests
   </button>

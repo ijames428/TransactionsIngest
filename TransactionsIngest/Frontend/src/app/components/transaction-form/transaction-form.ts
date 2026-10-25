@@ -2,106 +2,147 @@ import { Component } from '@angular/core';
 import { TransactionService, Transaction } from '../../services/transaction';
 
 @Component({
-  selector: 'app-transaction-form',
-  templateUrl: './transaction-form.html',
-  styleUrls: ['./transaction-form.css']
+	selector: 'app-transaction-form',
+	templateUrl: './transaction-form.html',
+	styleUrls: ['./transaction-form.css']
 })
 
-export class TransactionFormComponent 
-{
-  private TestDatas = [
-    ['Store Uptown', 100002, '***1111', 'UPTOWN', 'Wireless Mouse', 24.99, '2026-02-27T08:15:30Z', 'imported'],
-    ['Store Downtown', 100002, '***0002', 'DOWNTOWN', 'Mechanical Keyboard', 89.99, '2026-02-27T09:45:12Z', 'imported'],
-    ['Online', 100002, '***4444', 'ONLINE', 'USB-C Docking Station', 129.95, '2026-02-27T11:20:05Z', 'imported']
-  ];
+export class TransactionFormComponent {
+	isIdErrorVisible = false;
+	isCardNumberErrorVisible = false;
+	isProductNameErrorVisible = false;
+	isPriceErrorVisible = false;
 
-  constructor(private transactionService: TransactionService) {}
+	private TestDatas = [
+		['Store Uptown', 100002, '***1111', 'UPTOWN', 'Wireless Mouse', 24.99, '2026-02-27T08:15:30Z'],
+		['Store Downtown', 100002, '***0002', 'DOWNTOWN', 'Mechanical Keyboard', 89.99, '2026-02-27T09:45:12Z'],
+		['Online', 100002, '***4444', 'ONLINE', 'USB-C Docking Station', 129.95, '2026-02-27T11:20:05Z']
+	];
 
-  onSubmitTransaction(_source_system : string,
-                      _transaction_id: number,
-                      _card_number: string,
-                      _location_code: string,
-                      _product_name: string,
-                      _amount: number) 
-  {
-    const now: Date = new Date();
+	constructor(private transactionService: TransactionService) { }
 
-    const newTransaction: Transaction = {
-      sourceSystem: _source_system,
-      transactionId: _transaction_id,
-      cardNumber: _card_number,
-      locationCode: _location_code,
-      productName: _product_name,
-      amount: _amount,
-      transactionTime: now.toISOString(),
-      transactionStatus: 'imported'
-    };
+	onSubmitTransaction(_source_system: string,
+						_transaction_id: number,
+						_card_number: string,
+						_product_name: string,
+						_amount: number) {
+		let wasErrorFound = false;
+		
+		if (Number.isNaN(_transaction_id)) {
+			wasErrorFound = true;
+			this.isIdErrorVisible = true;
+		} else {
+			this.isIdErrorVisible = false;
+		}
+		
+		if (_card_number == "") {
+			wasErrorFound = true;
+			this.isCardNumberErrorVisible = true;
+		} else {
+			this.isCardNumberErrorVisible = false;
+		}
+		
+		if (_product_name == "") {
+			wasErrorFound = true;
+			this.isProductNameErrorVisible = true;
+		} else {
+			this.isProductNameErrorVisible = false;
+		}
+		
+		if (Number.isNaN(_amount)) {
+			wasErrorFound = true;
+			this.isPriceErrorVisible = true;
+		} else {
+			this.isPriceErrorVisible = false;
+		}
 
-    this.transactionService.createTransaction(newTransaction).subscribe({
-      next: (savedTransaction) => {
-        this.transactionService.triggerUpdateWithTransaction(savedTransaction);
-      },
-      error: (error) => {
-        console.error('Failed to send data to MapPost:', error);
-      }
-    });
-  }
+		if (wasErrorFound)
+		{
+			return;
+		}
 
-  async onRunTests() 
-  {
-    let x = this.TestDatas.length;
-    let num_tests = this.TestDatas.length;
+		let location_code = "UPTOWN";
+		if (_source_system == "Store Downtown") {
+			location_code = "DOWNTOWN";
+		}
+		else if (_source_system == "Online") {
+			location_code = "ONLINE";
+		}
 
-    await this.runTest(num_tests - x--);
-    await this.runTest(num_tests - x--);
-    await this.runTest(num_tests - x--);
-  }
+		const now: Date = new Date();
 
-  async runTest(test_index : number)
-  {
-    if (this.TestDatas.length <= test_index)
-    {
-      return;
-    }
+		const newTransaction: Transaction = {
+			sourceSystem: _source_system,
+			transactionId: _transaction_id,
+			cardNumber: _card_number,
+			locationCode: location_code,
+			productName: _product_name,
+			amount: _amount,
+			transactionTime: now.toISOString(),
+			transactionStatus: ''
+		};
 
-    const test_data: any[] = this.TestDatas[test_index];
-    
-    const newTestTransaction: Transaction = {
-      sourceSystem: test_data[0],
-      transactionId: test_data[1],
-      cardNumber: test_data[2],
-      locationCode: test_data[3],
-      productName: test_data[4],
-      amount: test_data[5],
-      transactionTime: test_data[6],
-      transactionStatus: ''
-    };
+		this.transactionService.createTransaction(newTransaction).subscribe({
+			next: (savedTransaction) => {
+				this.transactionService.triggerUpdateWithTransaction(savedTransaction);
+			},
+			error: (error) => {
+				console.error('Failed to send data to MapPost:', error);
+			}
+		});
+	}
 
-    this.transactionService.createTransaction(newTestTransaction).subscribe({
-      next: (savedTransaction) => {
-        this.transactionService.triggerUpdateWithTransaction(savedTransaction);
-      },
-      error: (error) => {
-        console.error('Failed to send data to MapPost:', error);
-      }
-    });
+	async onRunTests() {
+		let x = this.TestDatas.length;
+		let num_tests = this.TestDatas.length;
 
-    await this.delay(100);
-  }
-  
-  delay = (ms: number): Promise<void> => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  };
+		await this.runTest(num_tests - x--);
+		await this.runTest(num_tests - x--);
+		await this.runTest(num_tests - x--);
+	}
 
-  async onResetDatabases() 
-  {
-    this.transactionService.resetDatabases().subscribe({
-      next: (response) => {
-        this.transactionService.triggerUpdate();
-      },
-      error: (err) => {
-        console.error('Failed to clear database', err);
-      }
-    });
-  }
+	async runTest(test_index: number) {
+		if (this.TestDatas.length <= test_index) {
+			return;
+		}
+
+		const test_data: any[] = this.TestDatas[test_index];
+
+		const newTestTransaction: Transaction = {
+			sourceSystem: test_data[0],
+			transactionId: test_data[1],
+			cardNumber: test_data[2],
+			locationCode: test_data[3],
+			productName: test_data[4],
+			amount: test_data[5],
+			transactionTime: test_data[6],
+			transactionStatus: ''
+		};
+
+		this.transactionService.createTransaction(newTestTransaction).subscribe({
+			next: (savedTransaction) => {
+				this.transactionService.triggerUpdateWithTransaction(savedTransaction);
+			},
+			error: (error) => {
+				console.error('Failed to send data to MapPost:', error);
+			}
+		});
+
+		await this.delay(100);
+	}
+
+	delay = (ms: number): Promise<void> => {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	};
+
+	async onResetDatabases() {
+		this.transactionService.resetDatabases().subscribe({
+			next: (response) => {
+				this.transactionService.triggerUpdate();
+			},
+			error: (err) => {
+				console.error('Failed to clear database', err);
+			}
+		});
+	}
 }
