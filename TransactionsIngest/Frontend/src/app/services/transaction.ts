@@ -27,6 +27,12 @@ export interface HistoryEntry
   updateTime: string;
 }
 
+export interface SourceSystemImport
+{
+  sourceSystem: string;
+  transactions: Transaction[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,6 +40,7 @@ export interface HistoryEntry
 export class TransactionService {
     private apiUrl = 'https://localhost:7037/api/';
     private apiImportExtension = 'import';
+    private apiManualImportExtension = 'manual_import';
     private apiTransactionsExtension = 'transactions';
     private apiHistoryExtension = 'history';
     private apiReset = 'reset';
@@ -43,10 +50,23 @@ export class TransactionService {
 
     constructor(private http: HttpClient) {}
 
-    createTransaction(transaction: Transaction): Observable<Transaction> {
+    runImport(sourceSystem: string, transactions: Transaction[]): Observable<Transaction> {
+        const sourceSystemImport: SourceSystemImport = {
+				sourceSystem: sourceSystem,
+				transactions: transactions
+			};
+
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
         
-        var ObservableTransaction = this.http.post<Transaction>(this.apiUrl + this.apiImportExtension, transaction, { headers });
+        var ObservableTransaction = this.http.post<Transaction>(this.apiUrl + this.apiImportExtension, sourceSystemImport, { headers });
+
+        return ObservableTransaction;
+    }
+
+    runManualImport(transaction: Transaction): Observable<Transaction> {
+        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+        
+        var ObservableTransaction = this.http.post<Transaction>(this.apiUrl + this.apiManualImportExtension, transaction, { headers });
 
         return ObservableTransaction;
     }

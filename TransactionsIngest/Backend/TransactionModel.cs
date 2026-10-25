@@ -22,3 +22,9 @@ public class HistoryEntry
     public decimal oldDecimal { get; set; }
     public string updateTime { get; set; } = string.Empty;
 }
+
+public class SourceSystemImport
+{
+    public string sourceSystem { get; set; } = string.Empty;
+    public Transaction[] transactions { get; set; } = [];
+}

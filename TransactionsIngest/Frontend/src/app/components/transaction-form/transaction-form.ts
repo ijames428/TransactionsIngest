@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { TransactionService, Transaction } from '../../services/transaction';
 
+const SOURCE_SYSTEM_STORE_UPTOWN = "Store Uptown";
+const SOURCE_SYSTEM_STORE_DOWNTOWN = "Store Downtown";
+const SOURCE_SYSTEM_ONLINE = "Online";
+const LOCATION_CODE_STORE_UPTOWN = "UPTOWN";
+const LOCATION_CODE_STORE_DOWNTOWN = "DOWNTOWN";
+const LOCATION_CODE_ONLINE = "ONLINE";
+
 @Component({
 	selector: 'app-transaction-form',
 	templateUrl: './transaction-form.html',
@@ -13,10 +20,23 @@ export class TransactionFormComponent {
 	isProductNameErrorVisible = false;
 	isPriceErrorVisible = false;
 
-	private TestDatas = [
-		['Store Uptown', 100002, '***1111', 'UPTOWN', 'Wireless Mouse', 24.99, '2026-02-27T08:15:30Z'],
-		['Store Downtown', 100002, '***0002', 'DOWNTOWN', 'Mechanical Keyboard', 89.99, '2026-02-27T09:45:12Z'],
-		['Online', 100002, '***4444', 'ONLINE', 'USB-C Docking Station', 129.95, '2026-02-27T11:20:05Z']
+	private ImportDatas_Uptown = [
+		[SOURCE_SYSTEM_STORE_UPTOWN, 100002, '***1111', 'Wireless Mouse', 24.99, '2026-10-25T08:15:30Z'],
+		[SOURCE_SYSTEM_STORE_UPTOWN, 100003, '***1111', 'Keyboard', 34.99, '2026-10-25T08:20:30Z']
+	];
+	private ImportDatas_Downtown = [
+		[SOURCE_SYSTEM_STORE_DOWNTOWN, 100002, '***0002', 'Mechanical Keyboard', 89.99, '2026-10-25T09:45:12Z'],
+		[SOURCE_SYSTEM_STORE_DOWNTOWN, 100003, '***0002', 'Mousepad', 89.99, '2026-10-25T09:50:12Z']
+	];
+	private ImportDatas_Online = [
+		[SOURCE_SYSTEM_ONLINE, 100002, '***4444', 'USB-C Docking Station', 129.95, '2026-10-25T11:20:05Z'],
+		[SOURCE_SYSTEM_ONLINE, 100003, '***4444', 'Charging Dock', 49.99, '2026-10-25T11:25:05Z']
+	];
+
+	private ImportData = [
+		this.ImportDatas_Uptown,
+		this.ImportDatas_Downtown,
+		this.ImportDatas_Online
 	];
 
 	constructor(private transactionService: TransactionService) { }
@@ -61,28 +81,20 @@ export class TransactionFormComponent {
 			return;
 		}
 
-		let location_code = "UPTOWN";
-		if (_source_system == "Store Downtown") {
-			location_code = "DOWNTOWN";
-		}
-		else if (_source_system == "Online") {
-			location_code = "ONLINE";
-		}
-
 		const now: Date = new Date();
 
 		const newTransaction: Transaction = {
 			sourceSystem: _source_system,
 			transactionId: _transaction_id,
 			cardNumber: _card_number,
-			locationCode: location_code,
+			locationCode: this.getLocationCode(_source_system),
 			productName: _product_name,
 			amount: _amount,
 			transactionTime: now.toISOString(),
 			transactionStatus: ''
 		};
 
-		this.transactionService.createTransaction(newTransaction).subscribe({
+		this.transactionService.runManualImport(newTransaction).subscribe({
 			next: (savedTransaction) => {
 				this.transactionService.triggerUpdateWithTransaction(savedTransaction);
 			},
@@ -92,36 +104,55 @@ export class TransactionFormComponent {
 		});
 	}
 
-	async onRunTests() {
-		let x = this.TestDatas.length;
-		let num_tests = this.TestDatas.length;
-
-		await this.runTest(num_tests - x--);
-		await this.runTest(num_tests - x--);
-		await this.runTest(num_tests - x--);
+	async onRunImports() {
+		await this.runImport(0, SOURCE_SYSTEM_STORE_UPTOWN);
+		await this.runImport(1, SOURCE_SYSTEM_STORE_DOWNTOWN);
+		await this.runImport(2, SOURCE_SYSTEM_ONLINE);
 	}
 
-	async runTest(test_index: number) {
-		if (this.TestDatas.length <= test_index) {
+	getLocationCode(sourceSystem: string)
+	{
+		if (sourceSystem == SOURCE_SYSTEM_STORE_DOWNTOWN) {
+			return LOCATION_CODE_STORE_DOWNTOWN;
+		}
+		
+		if (sourceSystem == SOURCE_SYSTEM_ONLINE) {
+			return LOCATION_CODE_ONLINE;
+		}
+
+		return LOCATION_CODE_STORE_UPTOWN;
+	}
+
+	async runImport(import_index: number, sourceSystem: string) {
+		if (this.ImportData.length <= import_index) {
 			return;
 		}
 
-		const test_data: any[] = this.TestDatas[test_index];
+		const import_datas: any[] = this.ImportData[import_index];
+		if (import_datas.length == 0) {
+			return;
+		}
 
-		const newTestTransaction: Transaction = {
-			sourceSystem: test_data[0],
-			transactionId: test_data[1],
-			cardNumber: test_data[2],
-			locationCode: test_data[3],
-			productName: test_data[4],
-			amount: test_data[5],
-			transactionTime: test_data[6],
-			transactionStatus: ''
-		};
+		let import_transactions: Transaction[] = [];
 
-		this.transactionService.createTransaction(newTestTransaction).subscribe({
-			next: (savedTransaction) => {
-				this.transactionService.triggerUpdateWithTransaction(savedTransaction);
+		import_datas.forEach((import_data) => {
+			const newImportTransaction: Transaction = {
+				sourceSystem: import_data[0],
+				transactionId: import_data[1],
+				cardNumber: import_data[2],
+				locationCode: this.getLocationCode(sourceSystem),
+				productName: import_data[3],
+				amount: import_data[4],
+				transactionTime: import_data[5],
+				transactionStatus: ''
+			};
+
+			import_transactions.push(newImportTransaction);
+		})
+
+		this.transactionService.runImport(sourceSystem, import_transactions).subscribe({
+			next: () => {
+				this.transactionService.triggerUpdate();
 			},
 			error: (error) => {
 				console.error('Failed to send data to MapPost:', error);
